@@ -1,0 +1,40 @@
+// server/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String         // In a real app, hash this!
+  expenses      Expense[]
+  subscriptions Subscription[]
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  category  String   // e.g., "Food", "Transport"
+  date      DateTime @default(now())
+  
+  // Relation to User
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id          Int      @id @default(autoincrement())
+  name        String   // e.g., "Netflix"
+  amount      Float
+  billingDate Int      // Day of the month (1-31)
+  
+  // Relation to User
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+}
